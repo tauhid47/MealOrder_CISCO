@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace MealOrder
 {
+    /**
+        A restaurant contains a name, rating and associated meals, as instructed in the problem.
+    */
     public class Restaurant
     {
         public string Name { get; set; }
@@ -19,6 +22,12 @@ namespace MealOrder
             this.Meals = meals;
         }
 
+        /*
+            Method to return meals with specified feature(s).
+            If looking for meals with multiple feature constraints, pass them as comma-separated string.
+            If looking for a general meal, pass an empty string
+            This method will return only one type of meals.
+        */
         public List<Meal> getMealsWithFeature(String features)
         {
             List<Meal> mealsToReturn = new List<Meal>();

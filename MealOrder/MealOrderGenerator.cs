@@ -6,12 +6,23 @@ using System.Threading.Tasks;
 
 namespace MealOrder
 {
+    /**
+        Contains methods to create orders based on availability and requirements
+    */
     public class MealOrderGenerator
     {
         private static bool allMealFulfilled;
         private static Dictionary<string, int> featureFulfilled;
         private static List<Order> generatedOrders;
 
+        /*
+            Method to generate orders based on
+                - Available restaurant data
+                - Feature requiremnts. Feature requirements include general meals requirements and meals with restrictions.
+                These need to be represented in a dictionary with features as keys and the number of meals as values.
+                If the restriction contains multiple features, put them in comma separated strings.
+                If there is no restriction, use an empty string.
+        */
         public static List<Order> GenerateOrders(List<Restaurant> restaurants, Dictionary<string, int> mealRequirements)
         {
             featureFulfilled = new Dictionary<string, int>();
@@ -32,6 +43,10 @@ namespace MealOrder
             return generatedOrders;
         }
 
+        /**
+            An auxilliary method to generate order from one restaurant.
+            This assumes that only one order can be placed in one restaurant.
+        */
         private static Order GenerateOrderFromSingleRestaurant(Restaurant r, Dictionary<string, int> mealRequirements)
         {
             Order orderFromSinglerestaurant = null;
@@ -60,6 +75,10 @@ namespace MealOrder
             return orderFromSinglerestaurant;
         }
 
+        /**
+            An auxilliary method to generate meals with single restriction.
+            This restriction may contain multiple features, i.e., Vegetarian and Nut-Free.
+        */
         private static List<Meal> GenerateSingleFeatureMealOrder(List<Meal> mealsAvailable, KeyValuePair<string, int> singleFeatureRequirement, int numMealsToFulfill)
         {
             List<Meal> mealsToOrder = new List<Meal>();
