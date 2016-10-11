@@ -33,7 +33,7 @@ namespace MealOrderTests
             int numRequiredGlutenFreeMeal = 7;
             int numRequiredTotalMeals = 50;
             Dictionary<string, int> featureRequirements = new Dictionary<string, int>();
-            featureRequirements.Add("Vegetarian", numRequriedVegeMeals);
+            featureRequirements.Add("Vegetarian, Nut-Free", numRequriedVegeMeals);
             featureRequirements.Add("Gluten-Free", numRequiredGlutenFreeMeal);
             featureRequirements.Add("", numRequiredTotalMeals - numRequriedVegeMeals - numRequiredGlutenFreeMeal);
 
@@ -42,10 +42,10 @@ namespace MealOrderTests
 
             // Compare Results
             List<Order> generatedOrders = MealOrderGenerator.GenerateOrders(restaurants, featureRequirements);
-            int restAVegeCount = GetTestFeatureCount("Restaurant A", generatedOrders, "Vegetarian");
+            int restAVegeCount = GetTestFeatureCount("Restaurant A", generatedOrders, "Vegetarian, Nut-Free");
             int restAGeneralCount = GetTestFeatureCount("Restaurant A", generatedOrders, "");
 
-            int restBVegeCount = GetTestFeatureCount("Restaurant B", generatedOrders, "Vegetarian");
+            int restBVegeCount = GetTestFeatureCount("Restaurant B", generatedOrders, "Vegetarian, Nut-Free");
             int restBGlutenFreeCount = GetTestFeatureCount("Restaurant B", generatedOrders, "Gluten-Free");
             int restBGeneralCount = GetTestFeatureCount("Restaurant B", generatedOrders, "");
 
@@ -57,14 +57,18 @@ namespace MealOrderTests
             Assert.AreEqual(2, restBGeneralCount);
         }
 
-        private int GetTestFeatureCount(string restaurantName, List<Order> generatedOrders, string singleFeature)
+        private int GetTestFeatureCount(string restaurantName, List<Order> generatedOrders, string feature)
         {
             int mealCount = 0;
             var restaurantAOrders = generatedOrders.Where(x => x.FromRestaurant.Name == restaurantName);
             if (restaurantAOrders.Count() > 0)
             {
                 var generatedRestaurantAMeals = restaurantAOrders.First().MealsOrdered;
-                if(singleFeature != "") mealCount = generatedRestaurantAMeals.Where(x => x.Features.Contains(singleFeature)).Count();
+                if (feature != "")
+                {
+                    string[] featureArray = feature.Split(',');
+                    mealCount = generatedRestaurantAMeals.Where(x=>featureArray.All(y => x.Features.Contains(y.Trim()))).Count();
+                }
                 else mealCount = generatedRestaurantAMeals.Where(x => x.Features.Count == 0).Count();
             }
             return mealCount;
@@ -73,7 +77,7 @@ namespace MealOrderTests
         private List<Restaurant> GenerateTestRestaurantData()
         {
             // Restaurant A
-            string[] vegeFeature = { "Vegetarian" };
+            string[] vegeFeature = { "Vegetarian", "Nut-Free" };
             string[] GlutenFreeFeature = { "Gluten-Free" };
             string[] GeneralFeature = { };
             List<Meal> restaurantAMeals = GenerateTestMealsData(4, vegeFeature);
